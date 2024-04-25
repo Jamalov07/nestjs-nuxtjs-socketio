@@ -24,6 +24,9 @@
                 :class="[m.sender == chatId ? 'ml-auto bg-gray-300/20' : '']">
                 <div>
                   <p class="text-sm">
+                    {{ users.find((u)=>u.chatId==m.sender)?.name }}
+                  </p>
+                  <p class="text-sm">
                     {{ m.message }}
                   </p>
                   <p class="mt-2 text-xs text-gray-400">

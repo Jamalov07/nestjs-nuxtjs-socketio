@@ -4,11 +4,15 @@ import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayDisconnect,
+  OnGatewayConnection,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: true })
-export class ChatGateway implements OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayDisconnect, OnGatewayConnection, OnGatewayInit
+{
   // The server is used to emit events to all clients
   @WebSocketServer()
   server: Server;
@@ -25,6 +29,14 @@ export class ChatGateway implements OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     this.users = this.users.filter((user) => user.id !== client.id);
     this.server.emit('users', this.users);
+  }
+
+  afterInit(server: any) {
+    // console.log(server);
+  }
+
+  handleConnection(client: Socket) {
+    // console.log(client);
   }
 
   /**
@@ -62,6 +74,7 @@ export class ChatGateway implements OnGatewayDisconnect {
    */
   @SubscribeMessage('new message')
   newMessage(@MessageBody() payload: any) {
+    console.log(payload);
     this.messages.push(payload);
     this.server.to(payload.recipient).emit('new message', payload);
   }
